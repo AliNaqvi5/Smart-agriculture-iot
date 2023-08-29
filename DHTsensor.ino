@@ -9,7 +9,7 @@ dht DHT;
 #define A 12518931.7
 
 
-int sensorPin = A0;      // input pin for the potentiometer
+int LDRPin = A0;      // input pin for the potentiometer
 float digitalValue = 0;  // variable to store the value coming from the sensor
 float Vres = 0.00;
 float Vldr = 0.00;
@@ -33,7 +33,7 @@ void loop() {
   delay(100);
 
   // LDR Sensor
-  digitalValue = analogRead(sensorPin);  // read the value from the analog channel
+  digitalValue = analogRead(LDRPin);  // read the value from the analog channel
   Serial.print("digital value = ");
   Serial.println(digitalValue);  //print digital value on serial monitor
 
@@ -55,9 +55,9 @@ void loop() {
   }
 
 
-      Serial.println(Rldr);
-      Serial.println(Vldr);
-      Serial.println(Current);
+      // Serial.println(Rldr);
+      // Serial.println(Vldr);
+      // Serial.println(Current);
       //A*R^B
       lux = pow(Rldr, slope) * A;
       //  Serial.println(A);
