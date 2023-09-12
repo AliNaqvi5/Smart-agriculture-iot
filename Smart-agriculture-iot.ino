@@ -10,9 +10,9 @@ dht DHT;
 #define A 12518931.7
 
 
-  LiquidCrystal lcd(8,9,10, 11,12,13);  //RS,En D4,D5,D6,D7
+  // LiquidCrystal lcd(8,9,10, 11,12,13);  //RS,En D4,D5,D6,D7
 
-int LDRPin = A0;      // input pin for the potentiometer
+int LDRPin = A0;      // input pin for the LDR
 int MoistureSensorPin = A1; // input pin for soil moisture sensor
 int rainSensorPin = A2;
 
@@ -22,23 +22,53 @@ float Vldr = 0.00;
 double Current = 0.000;
 double  slope = -1.404966547;
 
+// default limits
+int tempMin = 27;
+int tempMax = 32;
+int humMin = 70;
+int humMax = 90;
+int luxMax = 800;
+int soilMoistureMin = 20;
 
 int Rldr = 0; // variable
 double lux = 0.0000;
 
 void setup() {
   Serial.begin(9600);
-  lcd.begin(16, 2);
+  // lcd.begin(16, 2);
+  delay(2000);
 }
 
 void loop() {
   int chk = DHT.read11(DHT11_PIN);
+    // Serial.print("start::");
   Serial.print("temperature:");
   // Serial.print(chk);
   Serial.println(DHT.temperature);
+  if(DHT.temperature < tempMin )
+  {
+     Serial.print("Alarmtemperature:");
+       Serial.println("Low Temperature");
+  }else if(DHT.temperature > tempMax)
+  {
+    //cooling system 
+        Serial.print("Alarmtemperature:");
+       Serial.println("High Temperature");
+  }
+
+   delay(1000);
   Serial.print("humidity:");
   Serial.println(DHT.humidity);
-  delay(100);
+  if(DHT.humidity < humMin )
+  {
+    Serial.print("Alarmhumidity:");
+       Serial.println("Low humidity");
+  }else if(DHT.humidity > humMax)
+  {
+    Serial.print("Alarmhumidity:");
+       Serial.println("High humidity");
+  }
+  delay(1000);
 
   // LDR Sensor
   digitalValue = analogRead(LDRPin);  // read the value from the analog channel
@@ -63,8 +93,12 @@ void loop() {
     //  Serial.println("Good Day......");
     lux = pow(Rldr, slope) * A;
   }
-
-
+  if(lux > luxMax )
+  {
+    //ALert
+    Serial.print("Alarmlux:");
+       Serial.println("High intensity of sun light");
+  }
       // Serial.println(Rldr);
       // Serial.println(Vldr);
       // Serial.println(Current);
@@ -72,7 +106,7 @@ void loop() {
       
        Serial.print("lux:");
       Serial.println(lux);
-
+ delay(1000);
 // Soil Moisture sensor 
 
   float moisture_percentage;
@@ -82,7 +116,12 @@ void loop() {
   Serial.print("soilMoisture:");
   Serial.println(moisture_percentage);
   // Serial.print("%\n\n");
-
+  if(moisture_percentage < soilMoistureMin )
+  {
+    Serial.print("AlarmsoilMoisture:");
+       Serial.println("Low soilMoisture Pump start");
+  }
+ delay(1000);
   //Rain Sensor
   int sensorRain = analogRead(rainSensorPin);
   char *Raining = (sensorRain < 235 ) ? "Dry" :"Light Rain";
@@ -90,8 +129,15 @@ void loop() {
   Raining = (sensorRain > 547 ) ? "Heavy Rain" :Raining;
   Serial.print("rainStatus:");
   Serial.println(Raining);
+  
+  if(Raining != "Dry")
+  {
+    Serial.print("AlarmrainStatus:");
+       Serial.println("It is Raining in karachi");
+  }
+  // Serial.print("end::");
   // lcd.print("   CIRCUIT DIGEST");//print name
-
+ delay(1000);
   // Serial.println(DHT.temperature);
   // Serial.print("humidity:");
   // Serial.println(DHT.humidity);
@@ -116,5 +162,5 @@ void loop() {
 
 // lcd.setCursor(0, 0);// set the cursor to column 0, line1
 
-  delay(1000);
+  delay(300000);
 }
