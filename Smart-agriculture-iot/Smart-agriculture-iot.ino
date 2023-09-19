@@ -30,7 +30,7 @@ int humMax = 90;
 int luxMax = 800;
 int soilMoistureMin = 20;
 unsigned int loopDelay = 1000;
-unsigned int loopCount = (1*60*1000)/loopDelay;
+unsigned int loopCount = (5*60*1000)/loopDelay;
 int loopIncrement = 0;
 
 
@@ -41,14 +41,14 @@ double lux = 0.0000;
 void setup() {
   Serial.begin(9600);
   // lcd.begin(16, 2);
-
+  pinMode(13, OUTPUT);
     delay(2000);
 }
 
 
 void loop() {
-Serial.println(loopDelay);
-    Serial.println(loopCount);
+// Serial.println(loopDelay);
+//     Serial.println(loopCount);
   if(loopIncrement == loopCount || loopIncrement == 0)
   {
      int chk = DHT.read11(DHT11_PIN);
@@ -146,6 +146,22 @@ Serial.println(loopDelay);
         Serial.print("AlarmrainStatus:");
           Serial.println("It is Raining in karachi");
       }
+
+      digitalValue = analogRead(A3);
+      int level = 0;
+      level = (digitalValue > 235 ) ? 100 :66;
+    if(level == 66)
+      {digitalValue = analogRead(A4);
+      
+      level = (digitalValue > 235 ) ? 66 :33;
+      }else if( level == 33)
+      {
+      digitalValue = analogRead(A5);
+      
+      level = (digitalValue > 235 ) ? 33 :0;
+      }
+       Serial.print("level:");
+      Serial.println(level);
       loopIncrement = 0;
   }
   // Serial.print("end::");
@@ -179,10 +195,16 @@ Serial.println(loopDelay);
       // read the incoming byte:
     String teststr = Serial.readString();  //read until timeout
     teststr.trim(); 
-
+  
       // say what you got:
-      Serial.print("I received: ");
-      Serial.println(teststr);
+      if(teststr == "on")
+      {
+      digitalWrite(13, HIGH);
+      }else
+      {
+        digitalWrite(13, LOW);
+      }
+
     }
 
     
